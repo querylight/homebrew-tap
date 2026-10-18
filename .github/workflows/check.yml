@@ -11,10 +11,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Tap this checkout so the commands below see querylight/tap.
+      # Tap this checkout so the commands below see querylight/tap. Homebrew
+      # 6+ ignores third-party taps until they're trusted.
       - run: |
           mkdir -p "$(brew --repository)/Library/Taps/querylight"
           ln -s "$GITHUB_WORKSPACE" "$(brew --repository)/Library/Taps/querylight/homebrew-tap"
+          brew trust querylight/tap
 
       - run: brew style querylight/tap
       - run: brew audit --cask --new --online querylight/tap/querylight
