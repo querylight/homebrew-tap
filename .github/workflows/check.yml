@@ -1,0 +1,23 @@
+name: check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  casks:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Tap this checkout so the commands below see querylight/tap.
+      - run: |
+          mkdir -p "$(brew --repository)/Library/Taps/querylight"
+          ln -s "$GITHUB_WORKSPACE" "$(brew --repository)/Library/Taps/querylight/homebrew-tap"
+
+      - run: brew style querylight/tap
+      - run: brew audit --cask --new --online querylight/tap/querylight
+      - run: brew livecheck --cask querylight/tap/querylight
+      - run: brew install --cask querylight/tap/querylight
+      - run: brew uninstall --zap --cask querylight/tap/querylight
